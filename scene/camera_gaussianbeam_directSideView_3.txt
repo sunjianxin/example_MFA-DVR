@@ -1,0 +1,5 @@
+Camera:FocalPoint 3.5, 3.5, 3.5
+Camera:Position 12.000, 3.500, 3.500
+Camera:ViewUp 0.000000, 0.000000, 1.000000
+Camera:ViewAngle 30
+Camera:ClippingRange 1, 50 
