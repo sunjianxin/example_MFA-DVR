@@ -619,7 +619,7 @@ int main(int argc, char* argv[])
     // vtkNew<vtkSmartVolumeMapper> volumeMapper;
     // vtkNew<vtkGPUVolumeRayCastMapper> volumeMapper;
     volumeMapper->SetInputConnection(reader->GetOutputPort());
-    volumeMapper->SetMFAInputConnection(bblock, mfaDecoding, size, name);
+    volumeMapper->SetMFAInputConnection(bblock, mfaDecoding, size);
 
     // The volume holds the mapper and the property and
     // can be used to position/orient the volume

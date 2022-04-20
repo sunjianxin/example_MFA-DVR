@@ -94,6 +94,50 @@
   colorTransferFunction->AddRGBPoint(200.0, 1, 1, 1);                 \
   colorTransferFunction->AddRGBPoint(255.0, 1, 0, 0)
 
+#define SETTRANSFERFUNCTION_ANEURISM()                                \
+  opacityTransferFunction->AddPoint(0,  0.0);                         \
+  opacityTransferFunction->AddPoint(0.2627450980392157, 0.0);                         \
+  opacityTransferFunction->AddPoint(0.28627450980392155, 0.25);                        \
+  opacityTransferFunction->AddPoint(0.30980392156862746, 0.0);                         \
+  opacityTransferFunction->AddPoint(0.39215686274509803, 0.0);                        \
+  opacityTransferFunction->AddPoint(0.43137254901960786, 0.6);                        \
+  opacityTransferFunction->AddPoint(0.47058823529411764, 0.0);                        \
+  opacityTransferFunction->AddPoint(0.6078431372549019, 0.0);                        \
+  opacityTransferFunction->AddPoint(0.6666666666666666, 1.0);                        \
+  opacityTransferFunction->AddPoint(1.0, 1.0)
+
+#define SETCOLORMAP_ANEURISM()                                       \
+  colorTransferFunction->AddRGBPoint(0.0, 1.0, 1.0, 1.0);            \
+  colorTransferFunction->AddRGBPoint(0.30980392156862746,  1.0, 1.0, 1.0);            \
+  colorTransferFunction->AddRGBPoint(0.39215686274509803, 0.5, 0.0, 0.0);            \
+  colorTransferFunction->AddRGBPoint(0.43137254901960786, 1.0, 0.0, 0.0);            \
+  colorTransferFunction->AddRGBPoint(0.47058823529411764, 0.5, 0.0, 0.0);            \
+  colorTransferFunction->AddRGBPoint(0.6078431372549019, 1.0, 0.5, 0.0);            \
+  colorTransferFunction->AddRGBPoint(0.6666666666666666, 1.0, 0.5, 0.0);            \
+  colorTransferFunction->AddRGBPoint(1.0, 1.0, 0.5, 0.0)
+
+#define SETTRANSFERFUNCTION_ANEURISM_CS()                                \
+  opacityTransferFunction->AddPoint(0,  0.0);                         \
+  opacityTransferFunction->AddPoint(67, 0.0);                         \
+  opacityTransferFunction->AddPoint(73, 0.25);                        \
+  opacityTransferFunction->AddPoint(79, 0.0);                         \
+  opacityTransferFunction->AddPoint(100, 0.0);                        \
+  opacityTransferFunction->AddPoint(110, 0.6);                        \
+  opacityTransferFunction->AddPoint(120, 0.0);                        \
+  opacityTransferFunction->AddPoint(155, 0.0);                        \
+  opacityTransferFunction->AddPoint(170, 1.0);                        \
+  opacityTransferFunction->AddPoint(255, 1.0)
+
+#define SETCOLORMAP_ANEURISM_CS()                                       \
+  colorTransferFunction->AddRGBPoint(0.0, 1.0, 1.0, 1.0);            \
+  colorTransferFunction->AddRGBPoint(79,  1.0, 1.0, 1.0);            \
+  colorTransferFunction->AddRGBPoint(100, 0.5, 0.0, 0.0);            \
+  colorTransferFunction->AddRGBPoint(110, 1.0, 0.0, 0.0);            \
+  colorTransferFunction->AddRGBPoint(120, 0.5, 0.0, 0.0);            \
+  colorTransferFunction->AddRGBPoint(155, 1.0, 0.5, 0.0);            \
+  colorTransferFunction->AddRGBPoint(170, 1.0, 0.5, 0.0);            \
+  colorTransferFunction->AddRGBPoint(255, 1.0, 0.5, 0.0)
+
 namespace {
 void RestoreSceneFromFile(std::string fileName, vtkCamera* camera);
 }
@@ -108,6 +152,7 @@ int main(int argc, char* argv[])
     std::string infile_mfa;         // mfa input file
     int         size;               // size of vtk input file on each dimension
     std::string method;             // method used for ray traversal, dis/mfa
+    std::string data;               // dataset name
     bool        help;               // show help
 
     // Get command line arguments
@@ -116,6 +161,7 @@ int main(int argc, char* argv[])
     ops >> opts::Option('m', "mfa",      infile_mfa,     " MFA input file name");
     ops >> opts::Option('d', "size",     size,           " Sample size of VTK input file on each dimension");
     ops >> opts::Option('e', "method",   method,         " Method used for ray traversal, dis/mfa (dis for vtk default of NNS or trilinear interpolation; mfa for MFA decoding)");
+    ops >> opts::Option('n', "data",     data,           " Dataset name for respective setting of transfer functions");
     ops >> opts::Option('h', "help",     help,           " show help");
 
     if (!ops.parse(argc, argv) || help)
@@ -165,22 +211,37 @@ int main(int argc, char* argv[])
     // Create transfer mapping scalar value to opacity
     vtkNew<vtkPiecewiseFunction> opacityTransferFunction;
 #if defined(SHADEON)
-    //// SETTRANSFERFUNCTION_GAUSSIANBEAM_SHADE_ORG();
-    SETTRANSFERFUNCTION_MARSCHNER_SIMULATED_CS(); // color scale
-    //// SETTRANSFERFUNCTION_MARSCHNER_SIMULATED(); // non color scale
+    if (data == "gaussianbeam") {
+        SETTRANSFERFUNCTION_GAUSSIANBEAM_SHADE_ORG();
+    }
+    if (data == "vertebra") {
+        //// SETTRANSFERFUNCTION_MARSCHNER_SIMULATED_CS(); // color scale
+        //// SETTRANSFERFUNCTION_MARSCHNER_SIMULATED(); // non color scale
+        SETTRANSFERFUNCTION_ANEURISM_CS();
+        // SETTRANSFERFUNCTION_ANEURISM();
+    }
 #else
-    SETTRANSFERFUNCTION_GAUSSIANBEAM_NOSHADE_ORG();
+    if (data == "gaussianbeam") {
+        SETTRANSFERFUNCTION_GAUSSIANBEAM_NOSHADE_ORG();
+    }
 #endif
 
     // Create transfer mapping scalar value to color
     vtkNew<vtkColorTransferFunction> colorTransferFunction;
-    // SETCOLORMAP_GAUSSIANBEAM_NOSHADE_EVAL();
 #if defined(SHADEON)
-    //// SETCOLORMAP_GAUSSIANBEAM_SHADE_ORG();
-    SETCOLORMAP_MARSCHNER_SIMULATED_CS(); //color scale
-    //// SETCOLORMAP_MARSCHNER_SIMULATED(); // non color scale
+    if (data == "gaussianbeam") {
+        SETCOLORMAP_GAUSSIANBEAM_SHADE_ORG();
+    }
+    if (data == "vertebra") {
+        //// SETCOLORMAP_MARSCHNER_SIMULATED_CS(); //color scale
+        //// SETCOLORMAP_MARSCHNER_SIMULATED(); // non color scale
+        SETCOLORMAP_ANEURISM_CS();
+        // SETCOLORMAP_ANEURISM();
+    }
 #else
-    SETCOLORMAP_GAUSSIANBEAM_NOSHADE_ORG();
+    if (data == "gaussianbeam") {
+        SETCOLORMAP_GAUSSIANBEAM_NOSHADE_ORG();
+    }
 #endif
 
     // The property describes how the data will look
@@ -197,6 +258,13 @@ int main(int argc, char* argv[])
     vtkNew<vtkFixedPointVolumeRayCastMapper> volumeMapper;
     volumeMapper->SetInputConnection(reader->GetOutputPort());
     volumeMapper->SetMFAInputConnection(bblock, mfaDecoding, size);
+    if (data == "gaussianbeam") {
+        volumeMapper->SetSampleDistance(0.02);
+    }
+    if (data == "vertebra") {
+        volumeMapper->SetSampleDistance(0.25);
+    }
+    std::cout << "Sample Distance: " << volumeMapper->GetSampleDistance() << std::endl;
 
     vtkNew<vtkVolume> volume;
     volume->SetMapper(volumeMapper);
@@ -230,8 +298,8 @@ int main(int argc, char* argv[])
     // ren1->AddActor(axes);
 
     ren1->AddVolume(volume);
-    // ren1->SetBackground(255, 255, 255);
-    ren1->SetBackground(0, 0, 0);
+    ren1->SetBackground(255, 255, 255);
+    // ren1->SetBackground(0, 0, 0);
     ren1->GetActiveCamera()->Elevation(-90);
     ren1->ResetCameraClippingRange();
     ren1->ResetCamera();
@@ -243,8 +311,13 @@ int main(int argc, char* argv[])
     ren1->ResetCamera();
 
     renWin->SetSize(1000, 1000);
-    RestoreSceneFromFile("../../../scene/camera_marschner_simulated_directSideView.txt", ren1->GetActiveCamera());
-    //// RestoreSceneFromFile("../../../scene/camera_gaussianbeam_directSideView_3.txt", ren1->GetActiveCamera());
+    if (data == "gaussianbeam") {
+        RestoreSceneFromFile("../../../scene/camera_gaussianbeam_directSideView_3.txt", ren1->GetActiveCamera());
+    }
+    if (data == "vertebra") {
+        RestoreSceneFromFile("../../../scene/camera_aneurism.txt", ren1->GetActiveCamera());
+    }
+    //// RestoreSceneFromFile("../../../scene/camera_marschner_simulated_directSideView.txt", ren1->GetActiveCamera());
     renWin->Render();
     renWin->SetWindowName("Result");
 

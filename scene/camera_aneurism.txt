@@ -1,0 +1,5 @@
+Camera:FocalPoint 127.5, 127.5, 127.5
+Camera:Position 106.79, -113.277, 252.044
+Camera:ViewUp -0.054525, 0.462449, 0.884968
+Camera:ViewAngle 30
+Camera:ClippingRange 0.72945, 729.45
