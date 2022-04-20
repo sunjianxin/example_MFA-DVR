@@ -55,9 +55,11 @@ Visualize data using MFA-DVR. *simple_ray_cast_switch* is the program generating
 cd build/src/simple_ray_cast_switch
 ./simple_ray_cast_switch -v ../../../data/gaussianBeam_8x8x8.vtk -m ../../../data/gaussianBeam.mfa -n gaussianbeam -d 8 -e mfa
 ```
+![results](https://github.com/sunjianxin/example_MFA-DVR/blob/main/doc/gaussianBeam.png)
 * Real data
 ```bash
 cd build/src/simple_ray_cast_switch
-./simple_ray_cast_switch -v ../../../data/vertebra_128x128x128.vtk -m ../../../data/vertebra.mfa -n vertebra -d 128 -e mf
+./simple_ray_cast_switch -v ../../../data/vertebra_128x128x128.vtk -m ../../../data/vertebra.mfa -n vertebra -d 128 -e mfa
 ```
 Above operation generate the volume rendering image using MFA-DVR. The *.vtk* file is the VTK data file in structured points format used for comparison. Detail options of volume rendering can be checked using *-h* flag.
+![results](https://github.com/sunjianxin/example_MFA-DVR/blob/main/doc/vertebra.png)
